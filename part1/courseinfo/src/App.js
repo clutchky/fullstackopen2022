@@ -7,7 +7,7 @@ const Header = (props) => {
 }
 
 const Part = (props) => {
-  
+
   const {name, exercises} = props.part;
   
   return (
@@ -34,7 +34,6 @@ const Content = (props) => {
 
 const Total = (props) => {
 
-  console.log(props)
   const [part1, part2, part3] = props.exercises;
 
   return(
