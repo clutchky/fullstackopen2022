@@ -24,5 +24,3 @@ yarn-error.log*
 
 /src
 /public
-package-lock.json
-package.json
