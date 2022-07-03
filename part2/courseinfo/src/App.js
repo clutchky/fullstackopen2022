@@ -24,10 +24,10 @@ const Course = ({ course }) => {
   const { name, parts } = course;
 
   return (
-    <>
+    <div>
       <Header courseName={name} />
       <Content parts={parts} />
-    </>
+    </div>
   )
 }
 
