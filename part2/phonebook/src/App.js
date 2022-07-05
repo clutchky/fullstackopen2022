@@ -11,9 +11,12 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [searchValue, setSearchValue] = useState('');
 
-  const filteredPersons = persons.filter(person => 
-    person.name.toLowerCase().includes(searchValue)
+  const filteredPersons = persons.filter(person => ( 
+    person.name.toLowerCase().includes(searchValue.toLowerCase())
+    )
   );
+
+  console.log(searchValue);
 
   const addName = (event) => {
     event.preventDefault();
