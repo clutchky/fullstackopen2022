@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
@@ -10,6 +11,17 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchValue, setSearchValue] = useState('');
+
+  useEffect(() => {
+    console.log('getting data...');
+
+    axios
+    .get('http://localhost:3001/persons')
+    .then(response => {
+      console.log('data found');
+      setPersons(response.data);
+    })
+  }, []);
 
   const filteredPersons = persons.filter(person => ( 
     person.name.toLowerCase().includes(searchValue.toLowerCase())
