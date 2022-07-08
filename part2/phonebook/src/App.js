@@ -16,8 +16,6 @@ const App = () => {
     )
   );
 
-  console.log(searchValue);
-
   const addName = (event) => {
     event.preventDefault();
 
