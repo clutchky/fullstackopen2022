@@ -14,9 +14,8 @@ const App = () => {
       .get('https://restcountries.com/v3.1/all')
       .then(response => {
         console.log('data found');
-        console.log(response.data);
 
-      setCountries(response.data);
+        setCountries(response.data);
       })
   }, []);
 
