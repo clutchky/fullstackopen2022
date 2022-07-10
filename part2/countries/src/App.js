@@ -54,9 +54,7 @@ const App = () => {
         : exceedLimit
         ? 'Too many matches, specify another filter'
         : withinLimit
-        ? searchedCountry.map((country) => // default country list
-        <p key={country.name.common}>{country.name.common}</p>
-        )
+        ? searchedCountry.map(country => <div key={country.name.common}>{country.name.common}</div>)
         : '' // default state
         }
       </div>
