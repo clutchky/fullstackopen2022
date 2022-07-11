@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 
 import axios from 'axios';
 
+import CountryList from './components/CountryList';
+import Country from './components/Country';
+
 const App = () => {
 
   const [countries, setCountries] = useState([]);
@@ -23,12 +26,15 @@ const App = () => {
     country.name.common.toLowerCase().includes(searchValue.toLowerCase())
   ))
 
-  const displayOne = searchValue !== '' && searchedCountry.length === 1
-  const exceedLimit = searchedCountry.length > 10 && searchValue !== ''
-  const withinLimit = searchedCountry.length < 10
+  const displayOne = searchedCountry.length === 1
+  const exceedLimit = searchedCountry.length > 10 
 
   const handleInputChange = (event) => {
     setSearchValue(event.target.value);
+  }
+
+  const handleClick = (name) => {
+    setSearchValue(name)
   }
 
   return (
@@ -38,23 +44,10 @@ const App = () => {
       </div>
       <div>
         {displayOne
-        ? searchedCountry.map(country => ( // display one country
-          <div key={country.name.common}>
-            <h1>{country.name.common}</h1>
-            <p>Capital: {country.capital}</p>
-            <p>Area: {country.area}</p>
-            <h3>languages</h3>
-            <ul>
-            {Object.values(country.languages).map((lang, i) => <li key={i}>{lang}</li>)}
-            </ul>
-            <img src={country.flags.svg} alt={country.name.common + '\'s flag'} width="150"/>
-          </div>)
-        )
+        ? <Country countries={searchedCountry} />
         : exceedLimit
         ? 'Too many matches, specify another filter'
-        : withinLimit
-        ? searchedCountry.map(country => <div key={country.name.common}>{country.name.common}</div>)
-        : '' // default state
+        : <CountryList countries={searchedCountry} showDetails={handleClick}/>
         }
       </div>
     </div>
