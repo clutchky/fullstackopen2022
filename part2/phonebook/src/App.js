@@ -34,14 +34,29 @@ const App = () => {
 
     const personObject = {
       name: newName,
-      number: newNumber,
-      id: persons.length + 1
+      number: newNumber
     }
 
-    const newPersons = persons.map(person => person.name)
+    const newPersons = persons.map(person => person.name);
 
     if (newPersons.includes(personObject.name)) {
-      alert(`${personObject.name} is already added to the phonebook.`);
+      
+      if (window.confirm(`${personObject.name} is already added to the phonebook, replace the old number with a new one?`)) {
+          const matchedPerson = persons.find(person => person.name === personObject.name)
+          const id = matchedPerson.id
+          const changedItem = {...matchedPerson, number: newNumber}
+
+          personsServices
+            .update(id, changedItem)
+            .then(updatedPerson => {
+              setPersons(persons.map(person => person.id !== id ? person : updatedPerson))
+              setNewName('');
+              setNewNumber('');              
+            })
+      } else {
+        setNewName('');
+        setNewNumber('');
+      }
     } 
     else {
       personsServices
