@@ -1,10 +1,11 @@
-import PersonDetails from "../components/PersonDetails"
 
-const Persons = ({filteredPersons}) => {
+const Persons = ({filteredPersons, deleteName}) => {
     return (
         <div>
         {filteredPersons.map(person => (
-          <PersonDetails key={person.id} person={person} />
+          <div key={person.id}>
+            {person.name} {person.number} <button onClick={() => deleteName(person.id)}>delete</button>
+          </div>
           )
         )}
       </div>

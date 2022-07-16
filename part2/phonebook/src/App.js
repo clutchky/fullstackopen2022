@@ -5,6 +5,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 
+
 const App = () => {
 
   const [persons, setPersons] = useState([]);
@@ -54,6 +55,18 @@ const App = () => {
 
   }
 
+  const deleteName = (id) => {
+    const contact = persons.find(person => person.id === id)
+
+    if (window.confirm(`Delete ${contact.name}?`)) {
+      personsServices
+        .deleteItem(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+
   const handleSearchValue = (event) => {
     setSearchValue(event.target.value);
   }
@@ -73,7 +86,7 @@ const App = () => {
       <h3>add a new</h3>
       <PersonForm addName={addName} newName={newName} handleInputChange={handleInputChange} newNumber={newNumber} handlePhoneNumber={handlePhoneNumber} />
       <h3>Numbers</h3>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons filteredPersons={filteredPersons} deleteName={deleteName}/>
     </div>
   )
 }
