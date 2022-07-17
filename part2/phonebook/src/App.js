@@ -5,6 +5,14 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 
+const Notification = ({message}) => {
+  return (
+    <div className="notification">
+      {message}
+    </div>
+  )
+}
+
 
 const App = () => {
 
@@ -12,6 +20,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchValue, setSearchValue] = useState('');
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     console.log('getting data...');
@@ -51,7 +60,11 @@ const App = () => {
             .then(updatedPerson => {
               setPersons(persons.map(person => person.id !== id ? person : updatedPerson))
               setNewName('');
-              setNewNumber('');              
+              setNewNumber('');
+              setNotification(`Updated ${personObject.name}'s number`);
+              setTimeout(() => {
+                setNotification(null)
+              }, 5000);
             })
       } else {
         setNewName('');
@@ -65,6 +78,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName('');
           setNewNumber('');
+          setNotification(`Added ${personObject.name}`);
+          setTimeout(() => {
+            setNotification(null)
+          }, 5000);
         })
     }
 
@@ -97,6 +114,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {notification &&
+      <Notification message={notification}/>
+      }
       <Filter searchValue={searchValue} handleSearchValue={handleSearchValue} />
       <h3>add a new</h3>
       <PersonForm addName={addName} newName={newName} handleInputChange={handleInputChange} newNumber={newNumber} handlePhoneNumber={handlePhoneNumber} />
