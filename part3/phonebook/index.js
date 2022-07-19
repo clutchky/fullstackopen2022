@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json())
+
 let persons = [
     { 
       "id": 1,
@@ -65,6 +67,37 @@ app.delete('/api/persons/:id', (request, response) => {
     persons = persons.filter(p => p.id !== id);
 
     response.status(204).end();
+})
+
+// Generate random ID
+const generateId = () => {
+    const randomNumber = Math.floor(Math.random() * 999)
+    const id = persons.length > 0
+        ? randomNumber
+        : 0
+
+    return id;
+}
+
+// Add entry
+app.post('/api/persons/', (request, response) => {
+    const body = request.body;
+
+    if (!body.name || !body.number) {
+        return response.status(404).json({
+            error: 'missing data'
+        })
+    }
+
+    const person = {
+        id: generateId(),
+        name: body.name,
+        number: body.number,
+    }
+
+    persons = persons.concat(person);
+
+    response.json(person);
 })
 
 const PORT = 3001;
