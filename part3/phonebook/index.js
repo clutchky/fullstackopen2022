@@ -28,6 +28,17 @@ app.get('/', (request, response) => {
     response.send('<h1>Phonebook backend<h1>');
 })
 
+app.get('/info', (request, response) => {
+    const info = {
+        list: persons.length,
+        time: new Date()
+    }
+    response.send(`
+        <p>Phonebook has info for ${info.list} people<p>
+        <p>${info.time}</p>    
+    `);
+})
+
 app.get('/api/persons', (request, response) => {
     response.json(persons);
 })
