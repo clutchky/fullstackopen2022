@@ -1,4 +1,3 @@
-const { response } = require('express');
 const express = require('express');
 const app = express();
 
@@ -25,10 +24,12 @@ let persons = [
     }
 ]
 
+// Phonebook root
 app.get('/', (request, response) => {
     response.send('<h1>Phonebook backend<h1>');
 })
 
+// Phonebook information
 app.get('/info', (request, response) => {
     const info = {
         list: persons.length,
@@ -40,10 +41,12 @@ app.get('/info', (request, response) => {
     `);
 })
 
+// Display all
 app.get('/api/persons', (request, response) => {
     response.json(persons);
 })
 
+// Get individual person
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id);
     const person = persons.find(p => p.id === id);
@@ -54,6 +57,14 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end();
     }
     
+})
+
+// Delete entry
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id);
+    persons = persons.filter(p => p.id !== id);
+
+    response.status(204).end();
 })
 
 const PORT = 3001;
