@@ -83,9 +83,19 @@ const generateId = () => {
 app.post('/api/persons/', (request, response) => {
     const body = request.body;
 
+    // check if name or number is missing
     if (!body.name || !body.number) {
         return response.status(404).json({
-            error: 'missing data'
+            error: 'missing name or number'
+        })
+    }
+
+    // check if name already exists
+    const filteredPersons = persons.map(person => person.name.toLowerCase())
+
+    if (filteredPersons.includes(body.name.toLowerCase())) {
+        return response.status(404).json({
+            error: 'name must be unique'
         })
     }
 
