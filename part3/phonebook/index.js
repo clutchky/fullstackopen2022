@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 
 const app = express();
 
@@ -26,7 +27,8 @@ let persons = [
     }
 ]
 
-app.use(express.json())
+app.use(express.json());
+app.use(cors());
 
 // create body token
 morgan.token('body', (req, res) => {
