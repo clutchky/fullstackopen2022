@@ -23,7 +23,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 // Phonebook root
 app.get('/', (request, response) => {
-    response.send('<h1>Phonebook backend<h1>');
+    response.send('<h1>Phonebook backend 3.14<h1>');
 })
 
 // Phonebook information
@@ -48,14 +48,18 @@ app.get('/api/persons', (request, response) => {
 
 // Get individual person
 app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id);
-    const person = persons.find(p => p.id === id);
+    // const id = Number(request.params.id);
+    // const person = persons.find(p => p.id === id);
 
-    if(person) {
-        response.send(person);
-    } else {
-        response.status(404).end();
-    }
+    // if(person) {
+    //     response.send(person);
+    // } else {
+    //     response.status(404).end();
+    // }
+    Contact.findById(request.params.id)
+        .then(person => {
+            response.json(person);
+        })
     
 })
 
