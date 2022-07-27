@@ -67,45 +67,36 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end();
 })
 
-// Generate random ID
-const generateId = () => {
-    const randomNumber = Math.floor(Math.random() * 999)
-    const id = persons.length > 0
-        ? randomNumber
-        : 0
-
-    return id;
-}
-
 // Add entry
 app.post('/api/persons/', (request, response) => {
     const body = request.body;
 
     // check if name or number is missing
-    if (!body.name || !body.number) {
+    if ((body.name || body.number) === undefined) {
         return response.status(404).json({
             error: 'missing name or number'
         })
     }
 
     // check if name already exists
-    const filteredPersons = persons.map(person => person.name.toLowerCase())
+    // const filteredPersons = persons.map(person => person.name.toLowerCase())
 
-    if (filteredPersons.includes(body.name.toLowerCase())) {
-        return response.status(404).json({
-            error: 'name must be unique'
-        })
-    }
+    // if (filteredPersons.includes(body.name.toLowerCase())) {
+    //     return response.status(404).json({
+    //         error: 'name must be unique'
+    //     })
+    // }
 
-    const person = {
-        id: generateId(),
+    const person = new Contact({
         name: body.name,
         number: body.number,
-    }
+    })
 
-    persons = persons.concat(person);
+    person.save()
+        .then(savedPerson => {
+            response.json(person);
+        })
 
-    response.json(person);
 })
 
 const PORT = process.env.PORT;
