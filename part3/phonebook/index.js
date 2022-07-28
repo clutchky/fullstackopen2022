@@ -106,6 +106,22 @@ app.post('/api/persons/', (request, response) => {
 
 })
 
+// update number
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body;
+
+    const person = {
+        name: body.name,
+        number: body.number,
+    }
+
+    Contact.findByIdAndUpdate(request.params.id, person, {new: true})
+        .then(updatedContact => {
+            response.json(updatedContact);
+        })
+        .catch(error => next(error));
+})
+
 // custom error handler
 const errorHandler = (error, request, response, next) => {
     console.error(error.message);
