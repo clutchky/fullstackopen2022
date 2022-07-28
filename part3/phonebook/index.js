@@ -7,9 +7,9 @@ const app = express();
 
 const Contact = require('./models/person');
 
-app.use(express.json());
 app.use(cors());
 app.use(express.static('build'));
+app.use(express.json());
 
 // create body token
 morgan.token('body', (req, res) => {
@@ -47,20 +47,31 @@ app.get('/api/persons', (request, response) => {
 })
 
 // Get individual person
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Contact.findById(request.params.id)
         .then(person => {
-            response.json(person);
+            if (person) {
+                response.json(person);
+            } else {
+                response.status(404).end();
+            }
         })
-    
+        .catch(error => next(error));
 })
 
 // Delete entry
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id);
-    persons = persons.filter(p => p.id !== id);
-
-    response.status(204).end();
+app.delete('/api/persons/:id', (request, response, next) => {
+    Contact.findByIdAndRemove(request.params.id)
+        .then(result => {
+            if(result) {
+                response.status(204).end();
+            }
+            else {
+                console.log('already removed')
+                response.status(404).end();
+            }
+        })
+        .catch(error => next(error));
 })
 
 // Add entry
@@ -94,6 +105,20 @@ app.post('/api/persons/', (request, response) => {
         })
 
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message);
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({
+            error: 'malformatted id'
+        })
+    }
+
+    next(error);
+}
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 
