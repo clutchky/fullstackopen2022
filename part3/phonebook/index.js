@@ -106,6 +106,7 @@ app.post('/api/persons/', (request, response) => {
 
 })
 
+// custom error handler
 const errorHandler = (error, request, response, next) => {
     console.error(error.message);
 
