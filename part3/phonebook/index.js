@@ -23,19 +23,23 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 // Phonebook root
 app.get('/', (request, response) => {
-    response.send('<h1>Phonebook backend 3.14<h1>');
+    response.send('<h1>Phonebook backend 3.18<h1>');
 })
 
 // Phonebook information
 app.get('/info', (request, response) => {
-    const info = {
-        list: persons.length,
-        time: new Date()
-    }
-    response.send(`
-        <p>Phonebook has info for ${info.list} people<p>
-        <p>${info.time}</p>    
-    `);
+    Contact.estimatedDocumentCount()
+        .then(count => {
+            const info = {
+                list: count,
+                time: new Date()
+            }
+            
+            response.send(`
+                <p>Phonebook has info for ${info.list} people<p>
+                <p>${info.time}</p>    
+            `);
+        })
 })
 
 // Display all
