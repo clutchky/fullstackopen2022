@@ -13,6 +13,10 @@ mongoose
         console.log('error connecting to database', error.message);
     });
 
+const validator = (number) => {
+    return /\d\d-\d+/.test(number) || /\d{3}-\d+/.test(number)
+}
+
 const contactSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -21,6 +25,8 @@ const contactSchema = new mongoose.Schema({
     },
     number: {
         type: String,
+        validate: [validator, '{PATH} is an invalid format. ##-####### and ###-######## are valid phone numbers'],
+        minLength: 8,
         required: true
     }
 })
