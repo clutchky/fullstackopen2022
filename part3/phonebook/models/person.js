@@ -25,7 +25,7 @@ const contactSchema = new mongoose.Schema({
     },
     number: {
         type: String,
-        validate: [validator, '{PATH} is an invalid format. ##-####### and ###-######## are valid phone numbers'],
+        validate: [validator, '{VALUE} is an invalid format. eg. 09-1234556 and 040-22334455 are valid phone numbers'],
         minLength: 8,
         required: true
     }

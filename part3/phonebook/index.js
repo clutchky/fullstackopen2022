@@ -71,7 +71,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
                 response.status(204).end();
             }
             else {
-                console.log('already removed')
                 response.status(404).end();
             }
         })
@@ -89,25 +88,26 @@ app.post('/api/persons/', (request, response, next) => {
         })
     }
 
-    // check if name already exists
-    // const filteredPersons = persons.map(person => person.name.toLowerCase())
-
-    // if (filteredPersons.includes(body.name.toLowerCase())) {
-    //     return response.status(404).json({
-    //         error: 'name must be unique'
-    //     })
-    // }
-
-    const person = new Contact({
-        name: body.name,
-        number: body.number,
-    })
-
-    person.save()
-        .then(savedPerson => {
-            response.json(person);
+    Contact.findOne({name: body.name})
+        .then(result => {
+            if (result.name === body.name) {
+                return response.status(404).json({
+                    error: 'name must be unique'
+                })
+            }
         })
-        .catch(error => next(error));
+        .catch(() => {
+            const person = new Contact({
+                name: body.name,
+                number: body.number,
+            })
+        
+            person.save()
+                .then(savedPerson => {
+                    response.json(person);
+                })
+                .catch(error => next(error));
+        })
 
 })
 
