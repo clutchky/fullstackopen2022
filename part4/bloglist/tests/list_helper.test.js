@@ -1,11 +1,6 @@
 const listHelper = require('../utils/list_helper');
 
-test('dummy returns one', () => {
-  const blogs = [];
-
-  const result = listHelper.dummy(blogs);
-  expect(result).toBe(1);
-});
+const emptyBlog = [];
 
 const blogs = [
   {
@@ -59,25 +54,49 @@ const blogs = [
 
 ]
 
+const listWithOneBlog = [blogs[2]];
+
+test('dummy returns one', () => {
+  const result = listHelper.dummy(emptyBlog);
+  expect(result).toBe(1);
+});
+
 describe('total likes', () => {
 
   test('of empty list is zero', () => {
-    const emptyBlogs = []
-    const result = listHelper.totalLikes(emptyBlogs);
+    const result = listHelper.totalLikes(emptyBlog);
 
     expect(result).toBe(0);
   });
 
   test('when list has only one blog equals the likes of that', () => {
-    const listWithOneBlog = [blogs[0]];
     const result = listHelper.totalLikes(listWithOneBlog);
-  
-    expect(result).toBe(7);
+
+    expect(result).toBe(listWithOneBlog[0].likes);
   })
 
   test('of a bigger list is calculated right', () => {
     const result = listHelper.totalLikes(blogs);
 
     expect(result).toBe(36);
+  })
+});
+
+describe('favorite blog', () => {
+  test('of empty list is zero', () => {
+    const result = listHelper.favoriteBlog(emptyBlog);
+
+    expect(result).toEqual({ likes: 0 });
+  })
+
+  test('when list has only one blog, then it is the favorite blog', () => {
+    const result = listHelper.favoriteBlog(listWithOneBlog);
+
+    expect(result).toEqual(blogs[2])
+  })
+  
+  test('of a bigger list has the most likes', () => {
+    const result = listHelper.favoriteBlog(blogs)
+    expect(result).toEqual(blogs[2])
   })
 })
