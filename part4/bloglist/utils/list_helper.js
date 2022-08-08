@@ -61,13 +61,6 @@ const mostLikes = (blogs) => {
     return 0;
   }
 
-  if (blogs.length === 1) {
-    return {
-      author: blogs[0].author,
-      likes: blogs[0].likes
-    }
-  }
-
   // group likes by author
   const authorLikes = blogs.reduce((all, item) => {
     if (all[item.author] === undefined) {
