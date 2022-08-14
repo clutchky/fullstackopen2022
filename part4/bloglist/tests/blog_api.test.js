@@ -49,6 +49,30 @@ test('there is an id property', async () => {
   expect(idProperty).toBeDefined()
 });
 
+test('can post a blog entry', async () => {
+  const newBlog = {
+    title: 'sample blog entry',
+    author: 'sample author',
+    url: 'http://sampleblog.com',
+    likes: 0
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const response = await api.get('/api/blogs');
+
+  const titles = response.body.map(r => r.title);
+
+  expect(response.body).toHaveLength(initialBlogs.length + 1);
+  expect(titles).toContain(
+    'sample blog entry'
+  )
+});
+
 afterAll(() => {
   mongoose.connection.close();
 })
