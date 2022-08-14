@@ -73,6 +73,27 @@ test('can post a blog entry', async () => {
   )
 });
 
+test('likes property defaults to zero if not defined', async () => {
+  const newBlogNoLikes = {
+    title: 'unliked blog',
+    author: 'sample author',
+    url: 'http://sampleblog.com',
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlogNoLikes)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+
+  const response = await api.get('/api/blogs');
+
+  const likesProperty = Object.values(response.body[initialBlogs.length])[3];
+
+  expect(likesProperty).toBe(0);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 })
