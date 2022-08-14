@@ -31,7 +31,7 @@ beforeEach( async () => {
 
 test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs');
-
+  
   expect(response.body).toHaveLength(initialBlogs.length)
 });
 
@@ -40,6 +40,13 @@ test('a specific blog is in the returned blog list', async () => {
   const titles = response.body.map(r => r.title);
 
   expect(titles).toContain('The Patbingsoo');
+});
+
+test('there is an id property', async () => {
+  const response = await api.get('/api/blogs');
+  const idProperty = Object.keys(response.body[0])[4]
+
+  expect(idProperty).toBeDefined()
 });
 
 afterAll(() => {
