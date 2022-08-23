@@ -12,8 +12,6 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id);
 
-  console.log(blog.user.toString());
-
   if (blog) {
     response.json(blog);
   } else { // else block is triggered when there is no matching object
