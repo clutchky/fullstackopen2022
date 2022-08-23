@@ -9,6 +9,18 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs);
 });
 
+blogsRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id);
+
+  console.log(blog.user.toString());
+
+  if (blog) {
+    response.json(blog);
+  } else { // else block is triggered when there is no matching object
+    response.status(404).end();
+  }
+})
+
 blogsRouter.post('/', async (request, response) => {
   const body = request.body;
 
@@ -40,9 +52,26 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id);
+  
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
 
-  response.status(204).end();
+  if (!decodedToken.id) {
+    return response.status(401).json({
+      error: 'token missing or invalid'
+    });
+  }
+
+  const blogToDelete = await Blog.findById(request.params.id);
+
+  if (decodedToken.id === blogToDelete.user.toString()) {
+    await Blog.findByIdAndRemove(request.params.id);
+
+    response.status(204).end();
+  } else {
+    return response.status(401).json({
+      error: 'cannot delete blog of other users'
+    })
+  }
 });
 
 blogsRouter.put('/:id', async (request, response) => {
