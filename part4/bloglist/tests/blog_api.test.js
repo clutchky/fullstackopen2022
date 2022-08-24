@@ -121,7 +121,7 @@ describe('when blogs are initialized', () => {
   })
   
   describe('deleting a blog', () => {
-    test('a note can be deleted', async () => {
+    test('a blog can be deleted', async () => {
       const startingBlogs = await helper.blogsInDb();
       const blogToRemove = startingBlogs[0];
     
