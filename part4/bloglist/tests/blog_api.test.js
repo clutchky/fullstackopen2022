@@ -34,7 +34,29 @@ describe('when blogs are initialized', () => {
   });
 
   describe('adding a blog', () => {
+    beforeEach( async () => {
+      await User.deleteMany({});
+
+      const testUser = await helper.testUser();
+      await testUser.save();
+    })
+
+    test('fails without a token', async () => {
+
+      const newUser = {
+        'username': 'testuser',
+        'password': 'testpasswords'
+      }
+
+      await api
+        .post('/api/login')
+        .send(newUser)
+        .expect(401)
+    })
+
     test('succeeds with valid data', async () => {
+      const token = await helper.testUserToken();
+
       const newBlog = {
         title: 'sample blog entry',
         author: 'sample author',
@@ -45,6 +67,7 @@ describe('when blogs are initialized', () => {
       await api
         .post('/api/blogs')
         .send(newBlog)
+        .set('Authorization', `Bearer ${token}`)
         .expect(201)
         .expect('Content-Type', /application\/json/);
     
@@ -59,6 +82,8 @@ describe('when blogs are initialized', () => {
     });
   
     test('likes property defaults to zero if not defined', async () => {
+      const token = await helper.testUserToken();
+
       const newBlogNoLikes = {
         title: 'unliked blog',
         author: 'sample author',
@@ -68,6 +93,7 @@ describe('when blogs are initialized', () => {
       await api
         .post('/api/blogs')
         .send(newBlogNoLikes)
+        .set('Authorization', `Bearer ${token}`)
         .expect(201)
         .expect('Content-Type', /application\/json/)
     
@@ -120,18 +146,36 @@ describe('when blogs are initialized', () => {
     });
   })
   
-  describe('deleting a blog', () => {
+  describe('deleting a blog', () => { 
+    beforeEach( async () => {
+      // add a test user so we can create a blog with a user id
+      await User.deleteMany({});
+
+      const testUser = await helper.testUser();
+      await testUser.save();
+
+      // add a test blog to delete
+      await Blog.deleteMany({});
+      const testBlog = await helper.blogWithToken();
+
+      await testBlog.save();
+
+    });
+
     test('a blog can be deleted', async () => {
-      const startingBlogs = await helper.blogsInDb();
-      const blogToRemove = startingBlogs[0];
+      const testBlogs = await Blog.find({});
+      const blogToRemove = testBlogs[0];
     
+      const token = await helper.testUserToken();
+
       await api
-        .delete(`/api/blogs/${blogToRemove.id}`)
+        .delete(`/api/blogs/${blogToRemove._id.toString()}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(204)
     
       const endBlogs = await helper.blogsInDb();
     
-      expect(endBlogs).toHaveLength(helper.initialBlogs.length - 1);
+      expect(endBlogs).toHaveLength(testBlogs.length - 1);
     
       const titles = endBlogs.map(b => b.title);
     
