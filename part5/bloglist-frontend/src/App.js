@@ -10,11 +10,11 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    
-    (async () => {
-      setBlogs(await blogService.getAll())
-    })();
+    const blogs = async () => {
+	    setBlogs(await blogService.getAll())
+    };
 
+    blogs();
   }, [])
 
   const handleLogin = async (event) => {
