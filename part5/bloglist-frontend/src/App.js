@@ -11,6 +11,7 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const blogs = async () => {
@@ -35,15 +36,27 @@ const App = () => {
 
     const blogObject = {
       title: title,
-      author: author,
+      author: author || 'unknown author',
       url: url
     }
 
-    const result = await blogService.create(blogObject)
-    setBlogs(blogs.concat(result));
-    setTitle('');
-    setAuthor('');
-    setUrl('');
+    try {
+      const result = await blogService.create(blogObject)
+      setBlogs(blogs.concat(result));
+      setNotification({message: `a new blog ${blogObject.title} by ${blogObject.author} added`, status: 'ok'})
+      setTimeout(()=>{
+        setNotification(null);
+      }, 5000)
+      setTitle('');
+      setAuthor('');
+      setUrl('');
+    } catch {
+      setNotification({message: 'error adding new blog: missing title or url', status: 'error'})
+      setTimeout(()=>{
+        setNotification(null);
+      }, 5000)
+    }
+    
   }
 
   const handleLogin = async (event) => {
@@ -60,11 +73,12 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
-    } catch (exception) {
-      console.error(exception);
+    } catch {
+      setNotification({ message: 'wrong username or password', status: 'error' });
+      setTimeout(()=>{
+        setNotification(null)
+      }, 5000);
     }
-
-    console.log('logging in with', username, password);
   }
 
   const handleLogout = () => {
@@ -86,14 +100,15 @@ const App = () => {
   const loginForm = () => {
     return (
       <form onSubmit={handleLogin}>
-      <h3>login to the application</h3>
+      <h2>login to the application</h2>
+      { notification && handleNotification() }
       <div>
         username
         <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)} />
       </div>
       <div>
         password
-        <input type="text" value={password} name="Password" onChange={({ target }) => setPassword(target.value)} />
+        <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)} />
       </div>
       <button type="submit">login</button>
     </form>
@@ -102,6 +117,14 @@ const App = () => {
 
   const userLoggedIn = () => {
     return <div><p>{user.name} logged-in<button onClick={handleLogout}>logout</button></p></div>
+  }
+
+  const handleNotification = () => {
+    return (
+      <div className={notification.status}>
+        {notification.message}
+      </div>
+    )
   }
 
   if (user === null) {
@@ -115,6 +138,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      {notification && handleNotification()}
       {user && userLoggedIn()}
       
       <h2>create new</h2>
