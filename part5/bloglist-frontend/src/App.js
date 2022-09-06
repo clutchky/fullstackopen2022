@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -41,6 +43,7 @@ const App = () => {
     }
 
     try {
+      blogFormRef.current.toggleVisibility();
       const result = await blogService.create(blogObject)
       setBlogs(blogs.concat(result));
       setNotification({message: `a new blog ${blogObject.title} by ${blogObject.author} added`, status: 'ok'})
@@ -56,7 +59,7 @@ const App = () => {
         setNotification(null);
       }, 5000)
     }
-    
+
   }
 
   const handleLogin = async (event) => {
@@ -127,6 +130,8 @@ const App = () => {
     )
   }
 
+  const blogFormRef = useRef();
+
   if (user === null) {
     return (
       <div>
@@ -141,22 +146,17 @@ const App = () => {
       {notification && handleNotification()}
       {user && userLoggedIn()}
       
-      <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
-        <label>title</label>
-        <input value={title} onChange={handleTitleChange} />
-        </div>
-        <div>
-        <label>author</label>
-        <input value={author} onChange={handleAuthorChange} />
-        </div>
-        <div>
-        <label>url</label>
-        <input value={url} onChange={handleUrlChange} />
-        </div>
-        <button type="submit">create</button>
-      </form>
+      <Togglable buttonLabel='new blog' ref={blogFormRef}>
+        <BlogForm 
+          onSubmit={addBlog}
+          title={title}
+          author={author}
+          url={url}
+          handleTitleChange={handleTitleChange}
+          handleAuthorChange={handleAuthorChange}
+          handleUrlChange={handleUrlChange}
+        />
+      </Togglable>
 
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
