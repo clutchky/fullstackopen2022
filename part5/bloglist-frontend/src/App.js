@@ -56,7 +56,7 @@ const App = () => {
       const result = await blogService.updateItem(blogObject.id, blogObject);
       setBlogs(blogs.concat(result));
       setNotification({
-        message: `You liked ${blogObject.title} by ${blogObject.author}`, 
+        message: `You liked "${blogObject.title}" by ${blogObject.author}`, 
         status: 'ok'})
       setTimeout(()=>{
         setNotification(null);
@@ -148,9 +148,12 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs.map( (blog, index) =>
-        <Blog key={index} blog={blog} updateLike={updateLike} />
-      )}
+      {(blogs
+        .sort((a, b) => { return a.likes - b.likes }))
+        .map((blog, index) =>
+          <Blog key={index} blog={blog} updateLike={updateLike} />
+        )
+        .reverse()}
     </div>
   )
 }
