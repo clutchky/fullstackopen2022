@@ -48,6 +48,25 @@ const App = () => {
         setNotification(null);
       }, 5000)
     }
+  }
+
+  const updateLike = async (blogObject) => {
+
+    try {
+      const result = await blogService.updateItem(blogObject.id, blogObject);
+      setBlogs(blogs.concat(result));
+      setNotification({
+        message: `You liked ${blogObject.title} by ${blogObject.author}`, 
+        status: 'ok'})
+      setTimeout(()=>{
+        setNotification(null);
+      }, 5000)
+    } catch {
+      setNotification({message: 'error updating likes', status: 'error'})
+      setTimeout(()=>{
+        setNotification(null);
+      }, 5000)
+    }
 
   }
 
@@ -129,8 +148,8 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+      {blogs.map( (blog, index) =>
+        <Blog key={index} blog={blog} updateLike={updateLike} />
       )}
     </div>
   )

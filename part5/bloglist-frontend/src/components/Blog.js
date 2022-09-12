@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-const Blog = ({blog}) => {
+const Blog = ({blog, updateLike}) => {
   const [visible, setVisible] = useState(false);
   const [buttonText, setButtonText] = useState('view');
+  const [likes, setLikes] = useState(blog.likes);
 
   const blogStyle = {
       paddingTop: 10,
@@ -19,17 +20,28 @@ const Blog = ({blog}) => {
       : setButtonText('view');
     }
 
+    const handleLike = async () => {
+
+      await updateLike({
+        ...blog,
+        likes: likes + 1
+      });
+
+      setLikes(likes + 1);
+    }
+
     const user = JSON.parse(JSON.stringify(blog.user));
 
     const blogDetails = () => {
       return (
         <div>
           {blog.url}<br/>
-          likes {blog.likes} <button>like</button><br/>
+          likes {likes} <button onClick={handleLike}>like</button><br/>
           {user.name}
         </div>
       )
     }
+
   return (
     <div style={blogStyle}>
       <div>
