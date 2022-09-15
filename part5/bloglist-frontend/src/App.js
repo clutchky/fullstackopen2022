@@ -50,13 +50,12 @@ const App = () => {
     }
   }
 
-  const updateLike = async (blogObject) => {
-
+  const updateLike = async (id, blogObj) => {
+    
     try {
-      const result = await blogService.updateItem(blogObject.id, blogObject);
-      setBlogs(blogs.concat(result));
+      await blogService.updateItem(id, blogObj);
       setNotification({
-        message: `You liked "${blogObject.title}" by ${blogObject.author}`, 
+        message: `You liked "${blogObj.title}" by ${blogObj.author}`, 
         status: 'ok'})
       setTimeout(()=>{
         setNotification(null);
@@ -68,6 +67,7 @@ const App = () => {
       }, 5000)
     }
 
+    setBlogs(await blogService.getAll());
   }
 
   const handleLogin = async (event) => {
@@ -148,12 +148,15 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {(blogs
-        .sort((a, b) => { return a.likes - b.likes }))
+
+      {blogs
+        .sort((a,b) => { return a.likes - b.likes })
         .map((blog, index) =>
-          <Blog key={index} blog={blog} updateLike={updateLike} />
+          <Blog key={index} blog={blog} updateLike={updateLike} likes={blog.likes}/>
         )
-        .reverse()}
+        .reverse()
+      }
+
     </div>
   )
 }

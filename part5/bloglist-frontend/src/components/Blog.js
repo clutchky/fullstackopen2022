@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-const Blog = ({blog, updateLike}) => {
+const Blog = ({blog, updateLike, likes}) => {
   const [visible, setVisible] = useState(false);
   const [buttonText, setButtonText] = useState('view');
-  const [likes, setLikes] = useState(blog.likes);
 
   const blogStyle = {
       paddingTop: 10,
@@ -22,12 +21,11 @@ const Blog = ({blog, updateLike}) => {
 
     const handleLike = async () => {
 
-      await updateLike({
+      await updateLike(blog.id, {
         ...blog,
         likes: likes + 1
       });
 
-      setLikes(likes + 1);
     }
 
     const user = JSON.parse(JSON.stringify(blog.user));
