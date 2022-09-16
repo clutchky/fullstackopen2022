@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Blog = ({blog, updateLike, likes}) => {
+const Blog = ({blog, updateLike, likes, handleRemove, owner}) => {
   const [visible, setVisible] = useState(false);
   const [buttonText, setButtonText] = useState('view');
 
@@ -28,14 +28,24 @@ const Blog = ({blog, updateLike, likes}) => {
 
     }
 
+    const deleteBlog = async () => {
+      await handleRemove(blog.id, blog);
+    }
+
     const user = JSON.parse(JSON.stringify(blog.user));
+    const isOwner = owner.username === user.username;
+
+    const removeButton = () => {
+      return <button onClick={deleteBlog}>remove</button>
+    }
 
     const blogDetails = () => {
       return (
         <div>
           {blog.url}<br/>
           likes {likes} <button onClick={handleLike}>like</button><br/>
-          {user.name}
+          {user.name}<br/>
+          {isOwner && removeButton()}
         </div>
       )
     }

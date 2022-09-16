@@ -48,6 +48,7 @@ const App = () => {
         setNotification(null);
       }, 5000)
     }
+    setBlogs(await blogService.getAll());
   }
 
   const updateLike = async (id, blogObj) => {
@@ -68,6 +69,27 @@ const App = () => {
     }
 
     setBlogs(await blogService.getAll());
+  }
+
+  const deleteBlog = async (id, blog) => {
+    if (window.confirm(`remove "${blog.title}" by ${blog.author}?`)) {
+      try {
+        await blogService.deleteItem(id);
+        setNotification({
+          message: `"${blog.title}" by ${blog.author} was removed`, 
+          status: 'ok'})
+        setTimeout(()=>{
+          setNotification(null);
+        }, 5000)
+      } catch {
+        setNotification({message: 'error removing blog', status: 'error'})
+        setTimeout(()=>{
+          setNotification(null);
+        }, 5000)
+      }
+
+      setBlogs(await blogService.getAll());
+    }
   }
 
   const handleLogin = async (event) => {
@@ -152,7 +174,7 @@ const App = () => {
       {blogs
         .sort((a,b) => { return a.likes - b.likes })
         .map((blog, index) =>
-          <Blog key={index} blog={blog} updateLike={updateLike} likes={blog.likes}/>
+          <Blog key={index} blog={blog} updateLike={updateLike} likes={blog.likes} handleRemove={deleteBlog} owner={user} />
         )
         .reverse()
       }
