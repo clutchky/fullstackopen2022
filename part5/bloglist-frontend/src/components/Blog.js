@@ -1,55 +1,55 @@
-import { useState } from "react";
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Blog = ({blog, updateLike, likes, handleRemove, owner}) => {
+const Blog = ({ blog, updateLike, likes, handleRemove, owner }) => {
   const [visible, setVisible] = useState(false);
   const [buttonText, setButtonText] = useState('view');
 
   const blogStyle = {
-      paddingTop: 10,
-      paddingLeft: 2,
-      border: 'solid',
-      borderWidth: 1,
-      marginBottom: 5
-    }
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  };
 
-    const handleClick = () => {
-      setVisible(!visible);
-      buttonText === 'view' 
+  const handleClick = () => {
+    setVisible(!visible);
+    buttonText === 'view'
       ? setButtonText('hide')
       : setButtonText('view');
-    }
+  };
 
-    const handleLike = async () => {
+  const handleLike = async () => {
 
-      await updateLike(blog.id, {
-        ...blog,
-        likes: likes + 1
-      });
+    await updateLike(blog.id, {
+      ...blog,
+      likes: likes + 1
+    });
 
-    }
+  };
 
-    const deleteBlog = async () => {
-      await handleRemove(blog.id, blog);
-    }
+  const deleteBlog = async () => {
+    await handleRemove(blog.id, blog);
+  };
 
-    const user = JSON.parse(JSON.stringify(blog.user));
-    const isOwner = owner.username === user.username;
+  const user = JSON.parse(JSON.stringify(blog.user));
+  const isOwner = owner.username === user.username;
 
-    const removeButton = () => {
-      return <button onClick={deleteBlog}>remove</button>
-    }
+  const removeButton = () => {
+    return <button onClick={deleteBlog}>remove</button>;
+  };
 
-    const blogDetails = () => {
-      return (
-        <div>
-          {blog.url}<br/>
+  const blogDetails = () => {
+    return (
+      <div>
+        {blog.url}<br/>
           likes {likes} <button onClick={handleLike}>like</button><br/>
-          {user.name}<br/>
-          {isOwner && removeButton()}
-        </div>
-      )
-    }
+        {user.name}<br/>
+        {isOwner && removeButton()}
+      </div>
+    );
+  };
 
   return (
     <div style={blogStyle}>
@@ -58,8 +58,8 @@ const Blog = ({blog, updateLike, likes, handleRemove, owner}) => {
         {visible && blogDetails()}
       </div>
     </div>
-  )
-}
+  );
+};
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
@@ -67,6 +67,6 @@ Blog.propTypes = {
   likes: PropTypes.number.isRequired,
   handleRemove: PropTypes.func.isRequired,
   owner: PropTypes.object.isRequired
-}
+};
 
-export default Blog
+export default Blog;

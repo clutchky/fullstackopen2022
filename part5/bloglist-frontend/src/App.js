@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import { useState, useEffect, useRef } from 'react';
+import Blog from './components/Blog';
+import BlogForm from './components/BlogForm';
+import Togglable from './components/Togglable';
+import blogService from './services/blogs';
+import loginService from './services/login';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -14,7 +14,7 @@ const App = () => {
 
   useEffect(() => {
     const blogs = async () => {
-	    setBlogs(await blogService.getAll())
+      setBlogs(await blogService.getAll());
     };
 
     blogs();
@@ -24,7 +24,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
 
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
+      const user = JSON.parse(loggedUserJSON);
       setUser(user);
       blogService.setToken(user.token);
     }
@@ -34,63 +34,84 @@ const App = () => {
 
     try {
       blogFormRef.current.toggleVisibility();
-      const result = await blogService.create(blogObject)
+      const result = await blogService.create(blogObject);
       setBlogs(blogs.concat(result));
-      setNotification({
-        message: `a new blog ${blogObject.title} by ${blogObject.author} added`, 
-        status: 'ok'})
-      setTimeout(()=>{
+      setNotification(
+        {
+          message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+          status: 'ok'
+        }
+      );
+      setTimeout(() => {
         setNotification(null);
-      }, 5000)
+      }, 5000);
     } catch {
-      setNotification({message: 'error adding new blog: missing title or url', status: 'error'})
-      setTimeout(()=>{
+      setNotification(
+        {
+          message: 'error adding new blog: missing title or url', status: 'error'
+        }
+      );
+      setTimeout(() => {
         setNotification(null);
-      }, 5000)
+      }, 5000);
     }
     setBlogs(await blogService.getAll());
-  }
+  };
 
   const updateLike = async (id, blogObj) => {
-    
+
     try {
       await blogService.updateItem(id, blogObj);
-      setNotification({
-        message: `You liked "${blogObj.title}" by ${blogObj.author}`, 
-        status: 'ok'})
-      setTimeout(()=>{
+      setNotification(
+        {
+          message: `You liked "${blogObj.title}" by ${blogObj.author}`,
+          status: 'ok'
+        }
+      );
+      setTimeout(() => {
         setNotification(null);
-      }, 5000)
+      }, 5000);
     } catch {
-      setNotification({message: 'error updating likes', status: 'error'})
-      setTimeout(()=>{
+      setNotification(
+        {
+          message: 'error updating likes', status: 'error'
+        }
+      );
+      setTimeout(() => {
         setNotification(null);
-      }, 5000)
+      }, 5000);
     }
 
     setBlogs(await blogService.getAll());
-  }
+  };
 
   const deleteBlog = async (id, blog) => {
     if (window.confirm(`remove "${blog.title}" by ${blog.author}?`)) {
       try {
         await blogService.deleteItem(id);
-        setNotification({
-          message: `"${blog.title}" by ${blog.author} was removed`, 
-          status: 'ok'})
-        setTimeout(()=>{
+        setNotification(
+          {
+            message: `"${blog.title}" by ${blog.author} was removed`,
+            status: 'ok'
+          }
+        );
+        setTimeout(() => {
           setNotification(null);
-        }, 5000)
+        }, 5000);
       } catch {
-        setNotification({message: 'error removing blog', status: 'error'})
-        setTimeout(()=>{
+        setNotification(
+          {
+            message: 'error removing blog', status: 'error'
+          }
+        );
+        setTimeout(() => {
           setNotification(null);
-        }, 5000)
+        }, 5000);
       }
 
       setBlogs(await blogService.getAll());
     }
-  }
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -100,7 +121,7 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      )
+      );
 
       blogService.setToken(user.token);
       setUser(user);
@@ -108,47 +129,47 @@ const App = () => {
       setPassword('');
     } catch {
       setNotification({ message: 'wrong username or password', status: 'error' });
-      setTimeout(()=>{
-        setNotification(null)
+      setTimeout(() => {
+        setNotification(null);
       }, 5000);
     }
-  }
+  };
 
   const handleLogout = () => {
     window.localStorage.clear();
 
     setUser(null);
-  }
+  };
 
   const loginForm = () => {
     return (
       <form onSubmit={handleLogin}>
-      <h2>login to the application</h2>
-      { notification && handleNotification() }
-      <div>
+        <h2>login to the application</h2>
+        { notification && handleNotification() }
+        <div>
         username
-        <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)} />
-      </div>
-      <div>
+          <input type="text" value={username} name="Username" onChange={({ target }) => setUsername(target.value)} />
+        </div>
+        <div>
         password
-        <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)} />
-      </div>
-      <button type="submit">login</button>
-    </form>
-    )
-  }
+          <input type="password" value={password} name="Password" onChange={({ target }) => setPassword(target.value)} />
+        </div>
+        <button type="submit">login</button>
+      </form>
+    );
+  };
 
   const userLoggedIn = () => {
-    return <div><p>{user.name} logged-in<button onClick={handleLogout}>logout</button></p></div>
-  }
+    return <div><p>{user.name} logged-in<button onClick={handleLogout}>logout</button></p></div>;
+  };
 
   const handleNotification = () => {
     return (
       <div className={notification.status}>
         {notification.message}
       </div>
-    )
-  }
+    );
+  };
 
   const blogFormRef = useRef();
 
@@ -157,7 +178,7 @@ const App = () => {
       <div>
         {loginForm()}
       </div>
-    )
+    );
   }
 
   return (
@@ -165,14 +186,14 @@ const App = () => {
       <h2>blogs</h2>
       {notification && handleNotification()}
       {user && userLoggedIn()}
-      
+
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
 
       {blogs
-        .sort((a,b) => { return a.likes - b.likes })
+        .sort((a,b) => { return a.likes - b.likes; })
         .map((blog, index) =>
           <Blog key={index} blog={blog} updateLike={updateLike} likes={blog.likes} handleRemove={deleteBlog} owner={user} />
         )
@@ -180,7 +201,7 @@ const App = () => {
       }
 
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
