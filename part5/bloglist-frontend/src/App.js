@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
+import BlogDetails from './components/BlogDetails';
 import Togglable from './components/Togglable';
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -191,11 +192,18 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-
       {blogs
         .sort((a,b) => { return a.likes - b.likes; })
         .map((blog, index) =>
-          <Blog key={index} blog={blog} updateLike={updateLike} likes={blog.likes} handleRemove={deleteBlog} owner={user} />
+          <Blog key={index} blog={blog}>
+            <BlogDetails
+              blog={blog}
+              updateLike={updateLike}
+              likes={blog.likes}
+              handleRemove={deleteBlog}
+              owner={user}
+            />
+          </Blog>
         )
         .reverse()
       }
