@@ -60,6 +60,14 @@ describe('Blog app', function() {
       cy.get('#create-btn').click();
       cy.contains('E2E test blog - E2E test user');
     });
+
+    it('a blog can be liked', function() {
+      cy.contains('E2E default blog two - E2E author two').parent().find('button').as('toggleButton');
+      cy.get('@toggleButton').click();
+      cy.contains('like').click();
+      cy.contains('likes').parent().find('span')
+        .should('contain', '1');
+    });
   });
 
 });

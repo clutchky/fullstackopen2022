@@ -26,7 +26,7 @@ const BlogDetails = ({ blog, likes, handleRemove, updateLike, owner }) => {
   return (
     <div className='blogDetails'>
       {blog.url}<br/>
-        likes {likes} <button onClick={handleLike}>like</button><br/>
+        likes <span>{likes}</span> <button onClick={handleLike}>like</button><br/>
       {user.name}<br/>
       {isOwner && removeButton()}
     </div>
