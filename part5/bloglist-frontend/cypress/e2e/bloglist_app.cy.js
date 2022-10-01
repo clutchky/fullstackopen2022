@@ -37,4 +37,29 @@ describe('Blog app', function() {
     });
   });
 
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.login({username: 'testuser', password: 'testuser'});
+      cy.createBlog({
+        title: 'E2E default blog one',
+        author: 'E2E author one',
+        url: 'e2eurlone.com'
+      });
+      cy.createBlog({
+        title: 'E2E default blog two',
+        author: 'E2E author two',
+        url: 'e2eurltwo.com'
+      });
+    });
+
+    it('a blog can be created', function() {
+      cy.contains('create new blog').click();
+      cy.get('#blog-title').type('E2E test blog');
+      cy.get('#blog-author').type('E2E test user');
+      cy.get('#blog-url').type('localhost:3003');
+      cy.get('#create-btn').click();
+      cy.contains('E2E test blog - E2E test user');
+    });
+  });
+
 });
