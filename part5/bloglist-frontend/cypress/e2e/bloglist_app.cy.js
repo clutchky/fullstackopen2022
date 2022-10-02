@@ -1,12 +1,18 @@
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset');
-    const user = {
+    const userOne = {
       name: 'Test User',
       username: 'testuser',
       password: 'testuser'
     };
-    cy.request('POST', 'http://localhost:3003/api/users', user);
+    const userTwo = {
+      name: 'John Smith',
+      username: 'johnsmith',
+      password: 'johnsmith'
+    };
+    cy.request('POST', 'http://localhost:3003/api/users', userOne);
+    cy.request('POST', 'http://localhost:3003/api/users', userTwo);
     cy.visit('http://localhost:3000');
   });
 
@@ -62,12 +68,43 @@ describe('Blog app', function() {
     });
 
     it('a blog can be liked', function() {
-      cy.contains('E2E default blog two - E2E author two').parent().find('button').as('toggleButton');
+      cy.contains('E2E default blog two - E2E author two')
+        .parent()
+        .find('button')
+        .as('toggleButton');
       cy.get('@toggleButton').click();
       cy.contains('like').click();
       cy.contains('likes').parent().find('span')
         .should('contain', '1');
     });
+
+    it('a blog can be deleted', function() {
+      cy.contains('E2E default blog one - E2E author one')
+        .parent()
+        .find('button')
+        .as('toggleButton');
+      cy.get('@toggleButton').click();
+      cy.contains('remove').click();
+      cy.contains('E2E default blog one - E2E author one')
+        .should('not.exist');
+    });
+
+    describe('when logged in with another user', function() {
+      it.only('blog by other users cannot be deleted', function() {
+        cy.contains('logout').click();
+        cy.login({username: 'johnsmith', password: 'johnsmith'});
+        cy.contains('John Smith logged-in');
+        cy.contains('E2E default blog one - E2E author one')
+          .parent()
+          .find('button')
+          .as('toggleButton');
+        cy.get('@toggleButton').click();
+        cy.get('@toggleButton')
+          .parent()
+          .should('not.contain', 'remove');
+      });
+    });
+
   });
 
 });
