@@ -21,7 +21,7 @@ const Blog = (props) => {
 
   return (
     <div style={blogStyle}>
-      <div>
+      <div className='blog'>
         {props.blog.title} - {props.blog.author} <button onClick={handleClick}>{buttonText}</button><br/>
         {visible && props.children}
       </div>

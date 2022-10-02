@@ -49,12 +49,14 @@ describe('Blog app', function() {
       cy.createBlog({
         title: 'E2E default blog one',
         author: 'E2E author one',
-        url: 'e2eurlone.com'
+        url: 'e2eurlone.com',
+        likes: 3
       });
       cy.createBlog({
         title: 'E2E default blog two',
         author: 'E2E author two',
-        url: 'e2eurltwo.com'
+        url: 'e2eurltwo.com',
+        likes: 4
       });
     });
 
@@ -67,6 +69,27 @@ describe('Blog app', function() {
       cy.contains('E2E test blog - E2E test user');
     });
 
+    describe('blogs are ordered by most likes', function() {
+      it('blog with most likes is on top', function() {
+        // default order
+        cy.get('.blog').eq(0).should('contain', 'E2E default blog two');
+        cy.get('.blog').eq(1).should('contain', 'E2E default blog one');
+        cy.get('.blog').eq(1)
+          .find('button')
+          .as('toggleButton');
+        cy.get('@toggleButton').click();
+        cy.contains('like').click();
+        // same number of likes, no change
+        cy.get('.blog').eq(0).should('contain', 'E2E default blog two');
+        cy.get('.blog').eq(1).should('contain', 'E2E default blog one');
+        cy.wait(6000);
+        cy.contains('like').click();
+        // most liked is updated
+        cy.get('.blog').eq(0).should('contain', 'E2E default blog one');
+        cy.get('.blog').eq(1).should('contain', 'E2E default blog two');
+      });
+    });
+
     it('a blog can be liked', function() {
       cy.contains('E2E default blog two - E2E author two')
         .parent()
@@ -75,7 +98,7 @@ describe('Blog app', function() {
       cy.get('@toggleButton').click();
       cy.contains('like').click();
       cy.contains('likes').parent().find('span')
-        .should('contain', '1');
+        .should('contain', '5');
     });
 
     it('a blog can be deleted', function() {
@@ -90,7 +113,7 @@ describe('Blog app', function() {
     });
 
     describe('when logged in with another user', function() {
-      it.only('blog by other users cannot be deleted', function() {
+      it('blog by other users cannot be deleted', function() {
         cy.contains('logout').click();
         cy.login({username: 'johnsmith', password: 'johnsmith'});
         cy.contains('John Smith logged-in');
