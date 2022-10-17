@@ -31,7 +31,7 @@ const AnecdoteList = () => {
   const vote = async (id) => {
     const votedAnecdote = sortedAnecdotes.find(a => a.id === id);
     dispatch(addVote(id, votedAnecdote))
-    dispatch(setNotification(`you voted '${votedAnecdote.content}'`, 10));
+    dispatch(setNotification(`you voted '${votedAnecdote.content}'`, 5));
   }
 
   return (
