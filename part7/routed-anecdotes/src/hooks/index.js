@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const useField = () => {
+const useField = (type) => {
 
   const [value, setValue] = useState('');
 
@@ -8,9 +8,15 @@ const useField = () => {
     setValue(event.target.value);
   }
 
+  const onReset = () => {
+    setValue('');
+  }
+
   return {
+    type,
     value,
-    onChange
+    onChange,
+    onReset
   }
 
 };
