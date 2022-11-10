@@ -5,26 +5,28 @@ import BlogDetails from './components/BlogDetails';
 import Togglable from './components/Togglable';
 import blogService from './services/blogs';
 import loginService from './services/login';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setNotification } from './reducers/notificationReducer';
 import Notification from './components/Notification';
+import { initializeBlogs, createBlog } from './reducers/blogReducer';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
 
   const dispatch = useDispatch();
+  const blogs = useSelector(({ blogs }) => blogs);
+
+  const sortedBlogs = [...blogs].sort((a, b) => {
+    return a.likes - b.likes;
+  });
+
   let notification;
 
   useEffect(() => {
-    const blogs = async () => {
-      setBlogs(await blogService.getAll());
-    };
-
-    blogs();
-  }, []);
+    dispatch(initializeBlogs());
+  }, [dispatch]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
@@ -39,12 +41,11 @@ const App = () => {
   const addBlog = async (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility();
-      const result = await blogService.create(blogObject);
       notification = {
         message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
         status: 'ok'
       };
-      setBlogs(blogs.concat(result));
+      dispatch(createBlog(blogObject));
       dispatch(setNotification(notification, 5));
     } catch {
       notification = {
@@ -53,7 +54,7 @@ const App = () => {
       };
       dispatch(setNotification(notification, 5));
     }
-    setBlogs(await blogService.getAll());
+    dispatch(initializeBlogs());
   };
 
   const updateLike = async (id, blogObj) => {
@@ -71,8 +72,7 @@ const App = () => {
       };
       dispatch(setNotification(notification, 5));
     }
-
-    setBlogs(await blogService.getAll());
+    dispatch(initializeBlogs());
   };
 
   const deleteBlog = async (id, blog) => {
@@ -91,8 +91,7 @@ const App = () => {
         };
         dispatch(setNotification(notification, 5));
       }
-
-      setBlogs(await blogService.getAll());
+      dispatch(initializeBlogs());
     }
   };
 
@@ -181,10 +180,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs
-        .sort((a, b) => {
-          return a.likes - b.likes;
-        })
+      {sortedBlogs
         .map((blog, index) => (
           <Blog key={index} blog={blog}>
             <BlogDetails
