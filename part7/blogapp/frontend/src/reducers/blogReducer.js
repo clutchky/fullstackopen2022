@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import blogService from '../services/blogs';
+import { setNotification } from './notificationReducer';
 
 const blogSlice = createSlice({
   name: 'blogs',
@@ -31,23 +32,57 @@ export const initializeBlogs = () => {
 
 export const createBlog = blogObject => {
   return async dispatch => {
-    const newBlog = await blogService.create(blogObject);
-    dispatch(appendBlog(newBlog));
+    try {
+      const newBlog = await blogService.create(blogObject);
+      dispatch(appendBlog(newBlog));
+      dispatch(initializeBlogs());
+      dispatch(setNotification({
+        message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
+        status: 'ok'
+      }, 5));
+    } catch {
+      dispatch(setNotification({
+        message: 'error adding new blog: missing title or url',
+        status: 'error'
+      }, 5));
+    }
   };
 };
 
 export const updateItem = (id, blogObject) => {
   return async dispatch => {
-    const likedBlog = await blogService.updateItem(id, blogObject);
-    dispatch(updatedBlogs(likedBlog));
+    try {
+      const likedBlog = await blogService.updateItem(id, blogObject);
+      dispatch(updatedBlogs(likedBlog));
+      dispatch(initializeBlogs());
+      dispatch(setNotification({
+        message: `You liked "${blogObject.title}" by ${blogObject.author}`,
+        status: 'ok'
+      }, 5));
+    } catch (error) {
+      dispatch(setNotification({
+        message: 'error updating likes',
+        status: 'error'
+      }, 5));
+    }
   };
 };
 
-export const removeBlog = (id) => {
+export const removeBlog = (id, blog) => {
   return async dispatch => {
-    await blogService.deleteItem(id);
-    const blogs = await blogService.getAll();
-    dispatch(setBlogs(blogs));
+    try {
+      await blogService.deleteItem(id);
+      dispatch(initializeBlogs());
+      dispatch(setNotification({
+        message: `"${blog.title}" by ${blog.author} was removed`,
+        status: 'ok'
+      }, 5));
+    } catch {
+      dispatch(setNotification({
+        message: 'error removing blog',
+        status: 'error'
+      }, 5));
+    }
   };
 };
 

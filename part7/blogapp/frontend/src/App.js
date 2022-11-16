@@ -38,61 +38,18 @@ const App = () => {
     }
   }, []);
 
-  const addBlog = async (blogObject) => {
-    try {
-      blogFormRef.current.toggleVisibility();
-      notification = {
-        message: `a new blog ${blogObject.title} by ${blogObject.author} added`,
-        status: 'ok'
-      };
-      dispatch(createBlog(blogObject));
-      dispatch(setNotification(notification, 5));
-      dispatch(initializeBlogs());
-    } catch {
-      notification = {
-        message: 'error adding new blog: missing title or url',
-        status: 'error'
-      };
-      dispatch(setNotification(notification, 5));
-    }
-    dispatch(initializeBlogs());
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility();
+    dispatch(createBlog(blogObject));
   };
 
   const updateLike = async (id, blogObj) => {
-    try {
-      notification = {
-        message: `You liked "${blogObj.title}" by ${blogObj.author}`,
-        status: 'ok'
-      };
-      dispatch(updateItem(id, blogObj));
-      dispatch(setNotification(notification, 5));
-    } catch {
-      notification = {
-        message: 'error updating likes',
-        status: 'error'
-      };
-      dispatch(setNotification(notification, 5));
-    }
-    dispatch(initializeBlogs());
+    dispatch(updateItem(id, blogObj));
   };
 
   const deleteBlog = async (id, blog) => {
     if (window.confirm(`remove "${blog.title}" by ${blog.author}?`)) {
-      try {
-        dispatch(removeBlog(id));
-        notification = {
-          message: `"${blog.title}" by ${blog.author} was removed`,
-          status: 'ok'
-        };
-        dispatch(setNotification(notification, 5));
-      } catch {
-        notification = {
-          message: 'error removing blog',
-          status: 'error'
-        };
-        dispatch(setNotification(notification, 5));
-      }
-      dispatch(initializeBlogs());
+      dispatch(removeBlog(id, blog));
     }
   };
 
