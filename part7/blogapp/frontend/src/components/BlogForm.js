@@ -1,22 +1,21 @@
-import { useState } from 'react';
-
 const BlogForm = ({ createBlog }) => {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
 
   const addBlog = async (event) => {
     event.preventDefault();
 
+    const title = event.target.title.value;
+    event.target.title.value = '';
+    const author = event.target.author.value;
+    event.target.author.value = '';
+    const url = event.target.url.value;
+    event.target.url.value = '';
+
     await createBlog({
       title: title,
       author: author,
-      url: url,
+      url: url
     });
 
-    setTitle('');
-    setAuthor('');
-    setUrl('');
   };
 
   return (
@@ -26,25 +25,22 @@ const BlogForm = ({ createBlog }) => {
         <div>
           <label>title</label>
           <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
             id="blog-title"
+            name="title"
           />
         </div>
         <div>
           <label>author</label>
           <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
             id="blog-author"
+            name="author"
           />
         </div>
         <div>
           <label>url</label>
           <input
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
             id="blog-url"
+            name="url"
           />
         </div>
         <button type="submit" id="create-btn">

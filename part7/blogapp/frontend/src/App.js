@@ -8,7 +8,7 @@ import loginService from './services/login';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNotification } from './reducers/notificationReducer';
 import Notification from './components/Notification';
-import { initializeBlogs, createBlog } from './reducers/blogReducer';
+import { initializeBlogs, createBlog, updateItem, removeBlog } from './reducers/blogReducer';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -47,6 +47,7 @@ const App = () => {
       };
       dispatch(createBlog(blogObject));
       dispatch(setNotification(notification, 5));
+      dispatch(initializeBlogs());
     } catch {
       notification = {
         message: 'error adding new blog: missing title or url',
@@ -59,11 +60,11 @@ const App = () => {
 
   const updateLike = async (id, blogObj) => {
     try {
-      await blogService.updateItem(id, blogObj);
       notification = {
         message: `You liked "${blogObj.title}" by ${blogObj.author}`,
         status: 'ok'
       };
+      dispatch(updateItem(id, blogObj));
       dispatch(setNotification(notification, 5));
     } catch {
       notification = {
@@ -78,7 +79,7 @@ const App = () => {
   const deleteBlog = async (id, blog) => {
     if (window.confirm(`remove "${blog.title}" by ${blog.author}?`)) {
       try {
-        await blogService.deleteItem(id);
+        dispatch(removeBlog(id));
         notification = {
           message: `"${blog.title}" by ${blog.author} was removed`,
           status: 'ok'
@@ -177,7 +178,7 @@ const App = () => {
       {user && userLoggedIn()}
 
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
+        <BlogForm createBlog={addBlog} owner={user}/>
       </Togglable>
 
       {sortedBlogs
