@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Notification from './components/Notification';
 import { initializeBlogs, createBlog, updateItem, removeBlog } from './reducers/blogReducer';
 import { loggedUser, loginUser, logoutUser } from './reducers/userReducer';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import { getUsers } from './reducers/usersReducer';
 
 const Home = () => {
@@ -19,6 +19,7 @@ const Home = () => {
 };
 
 const Bloglist = () => {
+
   return (
     <div>
       <h2>Blogs</h2>
@@ -45,14 +46,46 @@ const Users = () => {
             <td></td>
             <td><strong>blogs created</strong></td>
           </tr>
-          {users.map((user, index) => (
-            <tr key={index}>
-              <td>{user.name}</td>
+          {users.map(user => (
+            <tr key={user.id}>
+              <td><Link to={`/users/${user.id}`}>{user.name}</Link></td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>
       </table>
+    </div>
+  );
+};
+
+const User = () => {
+
+  const id = useParams().id;
+
+  const dispatch = useDispatch();
+  const users = useSelector(({ users }) => users);
+
+  const user = users.find(u => u.id === id);
+
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <div>
+        <h3>added blogs</h3>
+        <ul>
+          {user.blogs.map(blog =>
+            <li key={blog.id}>{blog.title}</li>
+          )}
+        </ul>
+      </div>
     </div>
   );
 };
@@ -138,8 +171,9 @@ const App = () => {
     return (
       <div>
         <p>
-          {user.name} logged-in<button onClick={handleLogout}>logout</button>
+          {user.name} logged-in
         </p>
+        <button onClick={handleLogout}>logout</button>
       </div>
     );
   };
@@ -161,6 +195,7 @@ const App = () => {
 
         <Routes>
           <Route path="/blogs" element={<Bloglist />} />
+          <Route path="/users/:id" element={<User />} />
           <Route path="/users" element={<Users />} />
           <Route path="/" element={<Home />} />
         </Routes>
