@@ -7,6 +7,55 @@ import { useDispatch, useSelector } from 'react-redux';
 import Notification from './components/Notification';
 import { initializeBlogs, createBlog, updateItem, removeBlog } from './reducers/blogReducer';
 import { loggedUser, loginUser, logoutUser } from './reducers/userReducer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { getUsers } from './reducers/usersReducer';
+
+const Home = () => {
+  return (
+    <div>
+      <h2>Home</h2>
+    </div>
+  );
+};
+
+const Bloglist = () => {
+  return (
+    <div>
+      <h2>Blogs</h2>
+    </div>
+  );
+};
+
+const Users = () => {
+
+  const dispatch = useDispatch();
+  const users = useSelector(({ users }) => users);
+
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
+
+
+  return (
+    <div>
+      <h2>Users</h2>
+      <table>
+        <tbody>
+          <tr>
+            <td></td>
+            <td><strong>blogs created</strong></td>
+          </tr>
+          {users.map((user, index) => (
+            <tr key={index}>
+              <td>{user.name}</td>
+              <td>{user.blogs.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 const App = () => {
 
@@ -103,9 +152,20 @@ const App = () => {
 
   return (
     <div>
+
       <h2>blogs</h2>
       <Notification />
       {user && userLoggedIn()}
+
+      <Router>
+
+        <Routes>
+          <Route path="/blogs" element={<Bloglist />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+
+      </Router>
 
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} owner={user}/>
