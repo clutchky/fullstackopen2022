@@ -35,7 +35,7 @@ const SingleBlog = ({ updateLike }) => {
   return (
     <div>
       <h2>{blog.title} by {blog.author}</h2>
-      <div><a href={`//${blog.url}`}>{blog.url}</a></div>
+      <div><Link to={`//${blog.url}`}>{blog.url}</Link></div>
       <div>{blog.likes} likes <button onClick={handleLike}>like</button></div>
       <p>added by {blog.user.name}</p>
     </div>
@@ -129,6 +129,16 @@ const User = () => {
 
 const App = () => {
 
+  const padding = {
+    padding: 5
+  };
+
+  const navStyle = {
+    height: 'auto',
+    backgroundColor: 'teal',
+    padding: 5
+  };
+
   const dispatch = useDispatch();
   const user = useSelector(({ userState }) => userState);
 
@@ -199,17 +209,6 @@ const App = () => {
     );
   };
 
-  const userLoggedIn = () => {
-    return (
-      <div>
-        <p>
-          {user.name} logged-in
-        </p>
-        <button onClick={handleLogout}>logout</button>
-      </div>
-    );
-  };
-
   const blogFormRef = useRef();
 
   if (user === null) {
@@ -219,15 +218,23 @@ const App = () => {
   return (
     <div>
 
-      <h2>blogs</h2>
-      <Notification />
-      {user && userLoggedIn()}
-
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} owner={user}/>
-      </Togglable>
-
       <Router>
+
+        <div style={navStyle}>
+          <Link to="/" style={padding}>blogs</Link>
+          <Link to="/users" style={padding}>users</Link>
+          {user
+            ? <span>{user.name} logged-in <button onClick={handleLogout}>logout</button></span>
+            : <Link to="/login" style={padding}>login</Link>
+          }
+        </div>
+
+        <h2>blog app</h2>
+        <Notification />
+
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+          <BlogForm createBlog={addBlog} owner={user}/>
+        </Togglable>
 
         <Routes>
           <Route path="/blogs/:id" element={<SingleBlog
