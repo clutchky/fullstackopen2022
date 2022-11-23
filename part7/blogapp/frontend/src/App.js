@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
-import BlogDetails from './components/BlogDetails';
 import Togglable from './components/Togglable';
 import { useDispatch, useSelector } from 'react-redux';
 import Notification from './components/Notification';
@@ -10,21 +9,59 @@ import { loggedUser, loginUser, logoutUser } from './reducers/userReducer';
 import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import { getUsers } from './reducers/usersReducer';
 
-const Home = () => {
+const SingleBlog = ({ updateLike }) => {
+
+  const id = useParams().id;
+  const dispatch = useDispatch();
+  const blogs = useSelector(({ blogs }) => blogs);
+
+  const blog = blogs.find(b => b.id === id);
+
+  useEffect(() => {
+    dispatch(initializeBlogs());
+  }, []);
+
+  const handleLike = async () => {
+    await updateLike(blog.id, {
+      ...blog,
+      likes: blog.likes + 1,
+    });
+  };
+
+  if (!blog) {
+    return null;
+  }
+
   return (
     <div>
-      <h2>Home</h2>
+      <h2>{blog.title} by {blog.author}</h2>
+      <div><a href={`//${blog.url}`}>{blog.url}</a></div>
+      <div>{blog.likes} likes <button onClick={handleLike}>like</button></div>
+      <p>added by {blog.user.name}</p>
     </div>
   );
 };
 
 const Bloglist = () => {
 
+  const blogs = useSelector(({ blogs }) => blogs);
+
+  const sortedBlogs = [...blogs].sort((a, b) => {
+    return a.likes - b.likes;
+  });
+
   return (
     <div>
-      <h2>Blogs</h2>
+      {sortedBlogs
+        .map((blog, index) => (
+          <Blog key={index} blog={blog}>
+            <SingleBlog />
+          </Blog>
+        ))
+        .reverse()}
     </div>
   );
+
 };
 
 const Users = () => {
@@ -93,12 +130,7 @@ const User = () => {
 const App = () => {
 
   const dispatch = useDispatch();
-  const blogs = useSelector(({ blogs }) => blogs);
   const user = useSelector(({ userState }) => userState);
-
-  const sortedBlogs = [...blogs].sort((a, b) => {
-    return a.likes - b.likes;
-  });
 
   useEffect(() => {
     dispatch(initializeBlogs());
@@ -191,34 +223,24 @@ const App = () => {
       <Notification />
       {user && userLoggedIn()}
 
-      <Router>
-
-        <Routes>
-          <Route path="/blogs" element={<Bloglist />} />
-          <Route path="/users/:id" element={<User />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/" element={<Home />} />
-        </Routes>
-
-      </Router>
-
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} owner={user}/>
       </Togglable>
 
-      {sortedBlogs
-        .map((blog, index) => (
-          <Blog key={index} blog={blog}>
-            <BlogDetails
-              blog={blog}
-              updateLike={updateLike}
-              likes={blog.likes}
-              handleRemove={deleteBlog}
-              owner={user}
-            />
-          </Blog>
-        ))
-        .reverse()}
+      <Router>
+
+        <Routes>
+          <Route path="/blogs/:id" element={<SingleBlog
+            updateLike={updateLike}
+            handleRemove={deleteBlog} />}
+          />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/" element={<Bloglist />} />
+        </Routes>
+
+      </Router>
+
     </div>
   );
 };
