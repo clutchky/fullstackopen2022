@@ -4,7 +4,7 @@ import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
 import { useDispatch, useSelector } from 'react-redux';
 import Notification from './components/Notification';
-import { initializeBlogs, createBlog, updateItem, removeBlog } from './reducers/blogReducer';
+import { initializeBlogs, createBlog, updateItem, removeBlog, addNewComment } from './reducers/blogReducer';
 import { loggedUser, loginUser, logoutUser } from './reducers/userReducer';
 import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import { getUsers } from './reducers/usersReducer';
@@ -19,7 +19,7 @@ const SingleBlog = ({ updateLike }) => {
 
   useEffect(() => {
     dispatch(initializeBlogs());
-  }, []);
+  }, [dispatch]);
 
   const handleLike = async () => {
     await updateLike(blog.id, {
@@ -27,6 +27,21 @@ const SingleBlog = ({ updateLike }) => {
       likes: blog.likes + 1,
     });
   };
+
+  const addComment = async (event) => {
+    event.preventDefault();
+
+    const comment = event.target.comment.value;
+    event.target.comment.value = '';
+
+    const commentObj = {
+      content: comment
+    };
+
+    dispatch(addNewComment(id, commentObj));
+    dispatch(initializeBlogs());
+  };
+
 
   if (!blog) {
     return null;
@@ -38,6 +53,23 @@ const SingleBlog = ({ updateLike }) => {
       <div><Link to={`//${blog.url}`}>{blog.url}</Link></div>
       <div>{blog.likes} likes <button onClick={handleLike}>like</button></div>
       <p>added by {blog.user.name}</p>
+      <h3>comments</h3>
+      <form onSubmit={addComment}>
+        <div>
+          <input
+            id="blog-comment"
+            name="comment"
+          />
+          <button type="submit" id="createComment-btn">
+            add comment
+          </button>
+        </div>
+      </form>
+      <ul>
+        {blog.comments.map((c, index) => (
+          <li key={index}>{c.content}</li>
+        ))}
+      </ul>
     </div>
   );
 };

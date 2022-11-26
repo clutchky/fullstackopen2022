@@ -36,5 +36,11 @@ const deleteItem = async (id) => {
   return axios.delete(`${baseUrl}/${id}`, config);
 };
 
-const blogService = { create, updateItem, getAll, setToken, deleteItem };
+const addComment = async (id, commentObj) => {
+  const response = await axios.post(`${baseUrl}/${id}/comments`, commentObj);
+
+  return response.data;
+};
+
+const blogService = { create, updateItem, getAll, setToken, deleteItem, addComment };
 export default blogService;

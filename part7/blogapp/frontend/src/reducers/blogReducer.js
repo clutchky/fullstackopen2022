@@ -9,6 +9,9 @@ const blogSlice = createSlice({
     appendBlog(state, action) {
       state.push(action.payload);
     },
+    appendComment(state, action) {
+      state.push(action.payload);
+    },
     setBlogs(state, action) {
       return action.payload;
     },
@@ -21,7 +24,7 @@ const blogSlice = createSlice({
   }
 });
 
-export const { appendBlog, setBlogs, updatedBlogs } = blogSlice.actions;
+export const { appendBlog, setBlogs, updatedBlogs, appendComment } = blogSlice.actions;
 
 export const initializeBlogs = () => {
   return async dispatch => {
@@ -80,6 +83,25 @@ export const removeBlog = (id, blog) => {
     } catch {
       dispatch(setNotification({
         message: 'error removing blog',
+        status: 'error'
+      }, 5));
+    }
+  };
+};
+
+export const addNewComment = (id, commentObj) => {
+  return async dispatch => {
+    try {
+      const newComment = await blogService.addComment(id, commentObj);
+      dispatch(appendComment(newComment));
+      dispatch(initializeBlogs());
+      dispatch(setNotification({
+        message: 'comment added',
+        status: 'ok'
+      }, 5));
+    } catch {
+      dispatch(setNotification({
+        message: 'cannot add blank comment',
         status: 'error'
       }, 5));
     }

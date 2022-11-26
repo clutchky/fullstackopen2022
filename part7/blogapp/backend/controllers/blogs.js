@@ -73,4 +73,24 @@ blogsRouter.put("/:id", async (request, response) => {
   await response.json(updatedBlog);
 });
 
+blogsRouter.post("/:id/comments", async (request, response) => {
+  const body = request.body;
+  
+  const blog = await Blog.findById(request.params.id);
+
+  if (body.content === '') {
+    response.status(400).json({
+      error: "can't add blank comment"
+    })
+  } else {
+    blog.comments = blog.comments.concat(body);    
+
+    await blog.save();
+  
+    response.status(201).json(blog);
+      
+  }
+
+});
+
 module.exports = blogsRouter;
