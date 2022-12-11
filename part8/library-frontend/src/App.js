@@ -6,8 +6,6 @@ import NewBook from './components/NewBook'
 const App = () => {
   const [page, setPage] = useState('authors')
 
-  console.log(page);
-
   return (
     <div>
       <div>
