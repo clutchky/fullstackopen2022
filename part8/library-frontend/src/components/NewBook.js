@@ -1,4 +1,10 @@
+import { useMutation } from '@apollo/client'
 import { useState } from 'react'
+import { ALL_BOOKS, ADD_BOOK, ALL_AUTHORS } from '../queries'
+
+const Notify = ({ setError }) => {
+  return <div style={ { "color": "red" } } >{setError}</div>
+}
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -6,6 +12,11 @@ const NewBook = (props) => {
   const [published, setPublished] = useState('')
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
+  const [error, setError] = useState('');
+
+  const [ addBook ] = useMutation(ADD_BOOK, {
+    refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
+  });
 
   if (!props.show) {
     return null
@@ -14,7 +25,18 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    console.log('add book...')
+    try {
+      if (!title || !author) {
+        throw new Error("title or author must not be empty");
+      }
+      addBook({ variables: { title, author, published: Number(published), genres } });
+      console.log('add book...')
+    } catch (e) {
+      setError(e.message);
+      setTimeout(() => {
+        setError('');
+      }, 5000);
+    }
 
     setTitle('')
     setPublished('')
@@ -30,6 +52,7 @@ const NewBook = (props) => {
 
   return (
     <div>
+      <Notify setError={error} />
       <form onSubmit={submit}>
         <div>
           title
