@@ -150,51 +150,47 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
-    allBooks: (root, args) => {
-      if(args.author) {
-        const book = books.filter(b => b.author === args.author);
-        return book
-      }
-
-      if(args.genre) {
-        const byGenre = (book) => book.genres.includes(args.genre);
-
-        return books.filter(byGenre)
-      } 
-
-      return books
+    bookCount: async () => Book.collection.countDocuments(),
+    authorCount: async () => Author.collection.countDocuments(),
+    allBooks: async (root, args) => {
+      return Book.find({});
     },
-    allAuthors: () => authors
+    allAuthors: async () => {
+      return Author.find({});
+    }
   },
   Author: {
-    bookCount: (root) => {
-      const authorBooks = books.filter(b => b.author === root.name)
-      return authorBooks.length
+    bookCount: async (root) => {
+      const authorBooks = await Book.count({ author: root.id })
+      return authorBooks
     }
   },
   Mutation: {
     addBook: async (root, args) => {
+
+      const author = await Author.findOne({ name: args.author })
+      
+      if (author) {
+        const bookWithAuthor = new Book({...args, author: author.id})
+        return bookWithAuthor.save();
+      }
+
       const book = new Book({...args});
       return book.save();
-      
     },
     addAuthor: async (root, args) => {
       const author = new Author({...args});
       return author.save();
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(a => a.name === args.name);
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({name: args.name});
+      author.born = args.setBornTo
 
       if(!author) {
         return null
       }
       
-      const updatedAuthor = {...args, born: args.setBornTo }
-      authors = authors.map(a => a.name === args.name ? updatedAuthor : a );
-
-      return updatedAuthor
+      return author.save();
     }
   }
 }
