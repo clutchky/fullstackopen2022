@@ -15,6 +15,12 @@ const NewBook = (props) => {
   const [error, setError] = useState('');
 
   const [ addBook ] = useMutation(ADD_BOOK, {
+    onError: (error) => {
+      setError(error.graphQLErrors[0].message);
+      setTimeout(() => {
+        setError('');
+      }, 5000)
+    },
     refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
   });
 
@@ -29,8 +35,15 @@ const NewBook = (props) => {
       if (!title || !author) {
         throw new Error("title or author must not be empty");
       }
-      addBook({ variables: { title, author, published: Number(published), genres } });
+      addBook({ variables: { 
+        title, 
+        author: author, 
+        published: Number(published), 
+        genres 
+      } });
+
       console.log('add book...')
+
     } catch (e) {
       setError(e.message);
       setTimeout(() => {
@@ -85,7 +98,7 @@ const NewBook = (props) => {
             add genre
           </button>
         </div>
-        <div>genres: {genres.join(' ')}</div>
+        <div>genres: {genres.join(', ')}</div>
         <button type="submit">create book</button>
       </form>
     </div>

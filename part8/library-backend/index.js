@@ -117,7 +117,7 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args, context) => {
-      const book = new Book({...args});
+      
       const author = await Author.findOne({ name: args.author });
       const currentUser = context.currentUser;
 
@@ -139,7 +139,11 @@ const resolvers = {
         return bookWithAuthor
       }
 
+      const newAuthor = new Author({ name: args.author })
+      const book = new Book({...args, author: newAuthor});
+
       try {
+        await newAuthor.save();
         await book.save();
       } catch (error) {
           throw new UserInputError(error.message, {
