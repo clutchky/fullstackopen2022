@@ -1,12 +1,18 @@
 import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { LOGIN } from "../queries";
+import Notify from "./Notify";
 
 const LoginForm = ({ show, setToken, setPage }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const [login, result] = useMutation(LOGIN);
+  const [login, result] = useMutation(LOGIN, {
+    onError: (error) => {
+      setError(error.graphQLErrors[0].message);
+    }
+  });
 
   useEffect(() => {
     if (result.data) {
@@ -23,13 +29,23 @@ const LoginForm = ({ show, setToken, setPage }) => {
   const submit = async (event) => {
     event.preventDefault();
 
-    login({ variables: { username, password } })
-    setPage('authors')
+    try {
+      const value = await login({ variables: { username, password } });
+      
+      if (value.data) {
+        setPage('authors')
+      }
+
+    } catch (error) {
+      setPage('login')
+    }
+
   }
 
   
   return (
     <div>
+      <Notify setError={error} />
       <form onSubmit={submit}>
       <div>
         name 

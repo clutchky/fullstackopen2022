@@ -1,10 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
 import { ALL_BOOKS, ADD_BOOK, ALL_AUTHORS } from '../queries'
-
-const Notify = ({ setError }) => {
-  return <div style={ { "color": "red" } } >{setError}</div>
-}
+import Notify from './Notify'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
