@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { ALL_BOOKS, ADD_BOOK, ALL_AUTHORS } from '../queries'
+import { ALL_BOOKS, ADD_BOOK } from '../queries'
 import Notify from './Notify'
 
 const NewBook = (props) => {
@@ -18,7 +18,13 @@ const NewBook = (props) => {
         setError('');
       }, 5000)
     },
-    refetchQueries: [ { query: ALL_AUTHORS }, { query: ALL_BOOKS } ]
+    update: (cache, response) => {
+      cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(response.data.addBook)
+        }
+      })
+    }
   });
 
   if (!props.show) {
